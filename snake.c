@@ -1,24 +1,8 @@
+#include "snake.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
 #include <time.h>
-
-enum {UP, DOWN, LEFT, RIGHT};
-
-struct nodeT{
-  int x, y;
-  struct nodeT *next_node;
-};
-
-struct snakeT{
-  int speed, size, x, y, direction;
-  struct nodeT *next_node;
-  bool alive;
-};
-
-struct fruitT{
-  int x,y;
-};
 
 void changePosition(struct snakeT *snake){
   switch(snake->direction){
@@ -93,7 +77,6 @@ void moveSnake(struct snakeT *snake, char *snakespr, char *bodyspr, int prevx, i
 }
 
 void respawnFruit(struct fruitT *fruit, int row, int col){
-  srand(time(NULL));
   fruit->x = rand() % col;
   fruit->y = rand() % row;
 }
@@ -125,13 +108,14 @@ int gameEngine(struct snakeT *snake, struct fruitT *fruit){
   keypad(stdscr, TRUE);
   noecho();
   timeout(150);
-  char snakespr[] = "O";
-  char bodyspr[] = "-";
+  char snakespr[] = "Q";
+  char bodyspr[] = "o";
   char fruitspr[] = "*";
   getmaxyx(stdscr, row, col);
   respawnFruit(fruit, row, col);
   snake->y = row/2;
   snake->x = (col-strlen(snakespr))/2;
+  
   mvprintw(snake->y, snake->x,"%s",snakespr);
   while((ch = getch()) != 'q'){
     eraseNode(snake);
@@ -149,18 +133,5 @@ int gameEngine(struct snakeT *snake, struct fruitT *fruit){
     mvprintw(0, 0, "%d", snake->size);
   }
   endwin();
-  return 0;
-}
-
-int main(){
-  struct snakeT snake;
-  struct fruitT fruit;
-
-  snake.alive = TRUE;
-  snake.direction = 3;
-  snake.speed = 1;
-  snake.next_node = NULL;
-  snake.size = 1;
-  gameEngine(&snake, &fruit);
   return 0;
 }
